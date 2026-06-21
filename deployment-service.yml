@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bloggingapp-deployment
+  namespace: webapps 
+  labels:
+    app: bloggingapp
+spec:
+  selector:
+    matchLabels:
+      app: bloggingapp
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: bloggingapp
+    spec:
+      containers:
+        - name: bloggingapp
+          image: docker.io/hndk17/blogging-app:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+      imagePullSecrets:
+        - name: regcred
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: bloggingapp-ssvc
+  namespace: webapps
+spec:
+  selector:
+    app: bloggingapp
+  ports:
+    - protocol: "TCP"
+      port: 80
+      targetPort: 8080 
+  type: LoadBalancer
